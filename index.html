@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titanic Female Analysis - Hand Drawn Style</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 20px;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        .charts-section {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        .pie-chart {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            position: relative;
+            border: 3px solid #333;
+        }
+        .class1-pie {
+            background: conic-gradient(
+                #ff69b4 0deg 230deg,
+                #ff1493 230deg 290deg,
+                #ff69b4 290deg 360deg
+            );
+        }
+        .class2-pie {
+            background: conic-gradient(
+                #20b2aa 0deg 180deg,
+                #008b8b 180deg 240deg,
+                #20b2aa 240deg 360deg
+            );
+        }
+        .class3-pie {
+            background: conic-gradient(
+                #ffa500 0deg 120deg,
+                #ff8c00 120deg 200deg,
+                #ffa500 200deg 360deg
+            );
+        }
+        .pie-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            line-height: 1.2;
+        }
+        .legend {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .legend-item {
+            display: inline-block;
+            margin: 0 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+            border: 2px solid #333;
+        }
+        .class1-color { background-color: #ff69b4; }
+        .class2-color { background-color: #20b2aa; }
+        .class3-color { background-color: #ffa500; }
+        
+        .bars-section {
+            margin: 50px 0;
+        }
+        .class-bar {
+            margin: 30px 0;
+            position: relative;
+        }
+        .class-label {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .bar-container {
+            background-color: #f0f0f0;
+            border: 3px solid #333;
+            border-radius: 25px;
+            padding: 15px 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            position: relative;
+        }
+        .class1-bar { background-color: #ffe4e1; }
+        .class2-bar { background-color: #e0ffff; }
+        .class3-bar { background-color: #fff8dc; }
+        
+        .female-icon {
+            font-size: 20px;
+            margin: 2px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .female-icon:hover {
+            transform: scale(1.2);
+        }
+        .survived { opacity: 1; }
+        
+        .class1-icon { color: #ff1493; }
+        .class2-icon { color: #008b8b; }
+        .class3-icon { color: #ff8c00; }
+        
+        .global-fare-legend {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+        
+        .fare-group {
+            display: flex;
+            align-items: center;
+            margin: 2px 0;
+        }
+        .fare-icon {
+            font-size: 16px;
+            margin-right: 8px;
+        }
+        .fare-label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .stats-section {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .stat-item {
+            display: inline-block;
+            margin: 10px 20px;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+        
+        .title-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title-section">
+            <h1>Female 👩</h1>
+            <div class="subtitle">Titanic Female Survival by Class and Fare Group</div>
+        </div>
+        
+        <!-- Circle Charts Section -->
+        <div class="charts-section">
+            <div class="pie-chart class1-pie">
+                <div class="pie-label">1st Class<br>97.2%</div>
+            </div>
+            <div class="pie-chart class2-pie">
+                <div class="pie-label">2nd Class<br>88.7%</div>
+            </div>
+            <div class="pie-chart class3-pie">
+                <div class="pie-label">3rd Class<br>49.1%</div>
+            </div>
+        </div>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-color class1-color"></span>
+                1st Class
+            </div>
+            <div class="legend-item">
+                <span class="legend-color class2-color"></span>
+                2nd Class
+            </div>
+            <div class="legend-item">
+                <span class="legend-color class3-color"></span>
+                3rd Class
+            </div>
+        </div>
+        
+        <!-- Simple Fare Legend -->
+        <div class="global-fare-legend">
+            <div class="fare-group">
+                <span class="fare-label">Fare Groups:</span>
+            </div>
+            <div class="fare-group">
+                <span style="color: #333; font-weight: bold;">Dark Color = High Fare</span>
+            </div>
+            <div class="fare-group">
+                <span style="color: #666; font-weight: bold;">Medium Color = Middle Fare</span>
+            </div>
+            <div class="fare-group">
+                <span style="color: #999; font-weight: bold;">Light Color = Low Fare</span>
+            </div>
+        </div>
+
+        <!-- Bars Section -->
+        <div class="bars-section">
+            <!-- Class 1 Bar -->
+            <div class="class-bar">
+                <div class="class-label">1st Class</div>
+                <div class="bar-container class1-bar" id="class1-bar">
+                    <!-- Icons will be generated here -->
+                </div>
+            </div>
+            
+            <!-- Class 2 Bar -->
+            <div class="class-bar">
+                <div class="class-label">2nd Class</div>
+                <div class="bar-container class2-bar" id="class2-bar">
+                    <!-- Icons will be generated here -->
+                </div>
+            </div>
+            
+            <!-- Class 3 Bar -->
+            <div class="class-bar">
+                <div class="class-label">3rd Class</div>
+                <div class="bar-container class3-bar" id="class3-bar">
+                    <!-- Icons will be generated here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="stats-section">
+            <div class="stat-item">
+                <strong>Total Female Passengers:</strong> 466
+            </div>
+            <div class="stat-item">
+                <strong>Overall Survival Rate:</strong> 74.2%
+            </div>
+            <div class="stat-item">
+                <strong>Icons Show:</strong> Survived Women Only
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data from our analysis
+        const survivalData = [
+            {"class": "Class 1", "fare_group": "Low Fare", "survival_rate": 0.958, "count": 48, "survivors": 46},
+            {"class": "Class 1", "fare_group": "Middle Fare", "survival_rate": 1.0, "count": 49, "survivors": 49},
+            {"class": "Class 1", "fare_group": "High Fare", "survival_rate": 0.936, "count": 47, "survivors": 44},
+            {"class": "Class 2", "fare_group": "Low Fare", "survival_rate": 0.857, "count": 35, "survivors": 30},
+            {"class": "Class 2", "fare_group": "Middle Fare", "survival_rate": 0.829, "count": 41, "survivors": 34},
+            {"class": "Class 2", "fare_group": "High Fare", "survival_rate": 1.0, "count": 30, "survivors": 30},
+            {"class": "Class 3", "fare_group": "Low Fare", "survival_rate": 0.611, "count": 72, "survivors": 44},
+            {"class": "Class 3", "fare_group": "Middle Fare", "survival_rate": 0.446, "count": 74, "survivors": 33},
+            {"class": "Class 3", "fare_group": "High Fare", "survival_rate": 0.414, "count": 70, "survivors": 29}
+        ];
+
+        function createFemaleIcons() {
+            const classData = {
+                'Class 1': survivalData.filter(item => item.class === 'Class 1'),
+                'Class 2': survivalData.filter(item => item.class === 'Class 2'),
+                'Class 3': survivalData.filter(item => item.class === 'Class 3')
+            };
+
+            const colorMaps = {
+                'Class 1': {
+                    'Low Fare': '#ff69b4',
+                    'Middle Fare': '#dc143c',
+                    'High Fare': '#8b0000'
+                },
+                'Class 2': {
+                    'Low Fare': '#40e0d0',
+                    'Middle Fare': '#008080',
+                    'High Fare': '#004d4d'
+                },
+                'Class 3': {
+                    'Low Fare': '#ffd700',
+                    'Middle Fare': '#ff8c00',
+                    'High Fare': '#cc6600'
+                }
+            };
+
+            Object.keys(classData).forEach((className, classIndex) => {
+                const container = document.getElementById(`class${classIndex + 1}-bar`);
+                
+                classData[className].forEach(fareData => {
+                    const color = colorMaps[className][fareData.fare_group];
+                    
+                    // Scale down for display (each icon represents 2-3 people for larger groups)
+                    const scale = fareData.count > 50 ? 3 : (fareData.count > 30 ? 2 : 1);
+                    const survivedCount = Math.ceil(fareData.survivors / scale);
+                    
+                    // Add only survived icons
+                    for (let i = 0; i < survivedCount; i++) {
+                        const icon = document.createElement('i');
+                        icon.className = 'fas fa-female female-icon survived';
+                        icon.style.color = color;
+                        icon.title = `${className} - ${fareData.fare_group} - Survived${scale > 1 ? ` (represents ${scale} women)` : ''}`;
+                        container.appendChild(icon);
+                    }
+                });
+            });
+        }
+
+        // Create the icons when page loads
+        createFemaleIcons();
+    </script>
+</body>
+</html>
