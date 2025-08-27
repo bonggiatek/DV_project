@@ -349,6 +349,20 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
         
+        /* Scale indicator */
+        .scale-indicator {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #2c3e50;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
         /* Animation classes */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -523,7 +537,26 @@
             
             <!-- RIGHT DIVISION: DETAILED BREAKDOWN -->
             <div class="right-division">
-                <div class="division-title">👥 Detailed Female Passenger Breakdown</div>
+                <div class="division-title">Detailed Female Passenger Breakdown</div>
+                
+                <!-- Scale Indicator -->
+                <div class="scale-indicator" id="scale-indicator">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #007bff;"></span>
+                        <span style="color: #007bff; font-weight: bold;">Low Fare</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #6f42c1;"></span>
+                        <span style="color: #6f42c1; font-weight: bold;">Medium Fare</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #e83e8c;"></span>
+                        <span style="color: #e83e8c; font-weight: bold;">High Fare</span>
+                    </div>
+                    <div class="legend-item">
+                        <strong>💡 Icons:</strong> Solid = Survived, Hollow = Died
+                    </div>
+                </div>
                 
                 <div class="bars-section" id="bars-section">
                     <div class="class-bar" data-class="1">
@@ -542,24 +575,7 @@
                     </div>
                 </div>
                 
-                <!-- Legend for Right Division -->
-                <div class="legend">
-                    <div class="legend-item">
-                        <span class="legend-color" style="background: #007bff;"></span>
-                        <span style="color: #007bff; font-weight: bold;">Low Fare</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background: #6f42c1;"></span>
-                        <span style="color: #6f42c1; font-weight: bold;">Medium Fare</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background: #e83e8c;"></span>
-                        <span style="color: #e83e8c; font-weight: bold;">High Fare</span>
-                    </div>
-                    <div class="legend-item">
-                        <strong>💡 Icons:</strong> Solid = Survived, Hollow = Died
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
@@ -587,11 +603,17 @@
             'High Fare': '#e83e8c'
         };
 
+        // UNIFORM SCALE: Each icon represents the same number of women across all classes
+        const WOMEN_PER_ICON = 3; // Each icon represents 3 women
+
         function createFemaleIcons() {
             // Clear existing icons
             document.querySelectorAll('.bar-container').forEach(container => {
                 container.innerHTML = '';
             });
+
+            // Update scale indicator
+
 
             const classData = {
                 'Class 1': survivalData.filter(item => item.class === 'Class 1'),
@@ -609,22 +631,16 @@
                     classData[className].forEach(fareData => {
                         const color = fareColors[fareData.fare_group];
                         
-                        // Scaling based on group size
-                        let scale = 2;
-                        if (fareData.count > 60) scale = 4;
-                        else if (fareData.count > 40) scale = 3;
-                        else if (fareData.count > 25) scale = 2;
-                        else scale = 1;
+                        // UNIFORM SCALING: Use the same scale for all groups
+                        const survivedCount = Math.round(fareData.survivors / WOMEN_PER_ICON);
+                        const diedCount = Math.round((fareData.count - fareData.survivors) / WOMEN_PER_ICON);
                         
-                        const survivedCount = Math.ceil(fareData.survivors / scale);
-                        const diedCount = Math.ceil((fareData.count - fareData.survivors) / scale);
-                        
-                        // Add survived icons with consistent sizing
+                        // Add survived icons
                         for (let i = 0; i < survivedCount; i++) {
                             const icon = document.createElement('i');
                             icon.className = 'fas fa-female female-icon survived';
                             icon.style.color = color;
-                            icon.title = `${className} - ${fareData.fare_group} - Survived (${(fareData.survival_rate * 100).toFixed(1)}% survival rate)${scale > 1 ? ` - Represents ${scale} women` : ''}`;
+                            icon.title = `${className} - ${fareData.fare_group} - Survived (${(fareData.survival_rate * 100).toFixed(1)}% survival rate) - Represents ${WOMEN_PER_ICON} women`;
                             
                             // Add click interaction
                             icon.addEventListener('click', function() {
@@ -635,12 +651,12 @@
                             container.appendChild(icon);
                         }
                         
-                        // Add died icons with consistent sizing
+                        // Add died icons
                         for (let i = 0; i < diedCount; i++) {
                             const icon = document.createElement('i');
                             icon.className = 'fas fa-female female-icon died';
                             icon.style.webkitTextStrokeColor = color;
-                            icon.title = `${className} - ${fareData.fare_group} - Died (${(fareData.survival_rate * 100).toFixed(1)}% survival rate)${scale > 1 ? ` - Represents ${scale} women` : ''}`;
+                            icon.title = `${className} - ${fareData.fare_group} - Died (${(fareData.survival_rate * 100).toFixed(1)}% survival rate) - Represents ${WOMEN_PER_ICON} women`;
                             
                             // Add click interaction
                             icon.addEventListener('click', function() {
