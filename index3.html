@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titanic Female Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .title-section {
+            text-align: center;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+            font-style: italic;
+        }
+
+        /* MAIN HORIZONTAL LAYOUT - THREE DIVISIONS */
+        .main-content {
+            display: flex;
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        
+        /* LEFT SIDE - TWO VERTICAL DIVISIONS */
+        .left-side {
+            flex: 0 0 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-height: 0;
+        }
+        
+        /* TOP LEFT - FILTER CONTROLS */
+        .filter-division {
+            background: rgba(248, 249, 250, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #333;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        .filter-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #2c3e50;
+            text-align: center;
+        }
+        .filter-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .filter-btn {
+            padding: 8px 15px;
+            border: 2px solid #333;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .filter-btn.active {
+            background: #4CAF50;
+            color: white;
+            transform: scale(1.02);
+        }
+        .filter-btn.class1 { border-color: #ff69b4; }
+        .filter-btn.class2 { border-color: #20b2aa; }
+        .filter-btn.class3 { border-color: #ffa500; }
+        .filter-btn.active.class1 { background: #ff69b4; }
+        .filter-btn.active.class2 { background: #20b2aa; }
+        .filter-btn.active.class3 { background: #ffa500; }
+        
+        /* BOTTOM LEFT - PIE CHARTS */
+        .pie-division {
+            flex: 1;
+            background: rgba(248, 249, 250, 0.7);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #333;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            min-height: 0;
+        }
+        .division-title {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 12px;
+            color: #2c3e50;
+            border-bottom: 2px solid #333;
+            padding-bottom: 6px;
+        }
+        
+        .charts-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: calc(100% - 40px);
+            overflow-y: auto;
+        }
+        
+        /* Enhanced Pie Charts */
+        .pie-container {
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            border: 2px solid #333;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .pie-background-image {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.9;
+            z-index: 0;
+            border-radius: 0 10px 10px 0;
+            mask: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.8) 100%);
+            -webkit-mask: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.8) 100%);
+        }
+        
+        .pie1-background {
+            background-image: url('1.jpg');
+        }
+        
+        .pie2-background {
+            background-image: url('2.jpg');
+        }
+        
+        .pie3-background {
+            background-image: url('3.jpg');
+        }
+        .pie-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .pie-chart {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            position: relative;
+            border: 2px solid #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+            z-index: 2;
+        }
+        .pie-chart::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.5), transparent);
+            z-index: -1;
+        }
+        
+        .class1-pie {
+            background: conic-gradient(
+                #ff1493 0deg 350deg,
+                rgba(255, 20, 147, 0.3) 350deg 360deg
+            );
+        }
+        .class2-pie {
+            background: conic-gradient(
+                #008b8b 0deg 320deg,
+                rgba(0, 139, 139, 0.3) 320deg 360deg
+            );
+        }
+        .class3-pie {
+            background: conic-gradient(
+                #ff8c00 0deg 177deg,
+                rgba(255, 140, 0, 0.3) 177deg 360deg
+            );
+        }
+        
+        .pie-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 8px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3px 4px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            line-height: 1.1;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+        
+        .pie-info {
+            flex: 1;
+            min-width: 0;
+            z-index: 2;
+            position: relative;
+        }
+        .pie-info h3 {
+            margin: 0 0 6px 0;
+            color: #2c3e50;
+            font-size: 13px;
+        }
+        .pie-info .stats {
+            font-size: 10px;
+            line-height: 1.3;
+        }
+        
+        /* RIGHT DIVISION - DETAILED BREAKDOWN */
+        .right-division {
+            flex: 1;
+            background: rgba(248, 249, 250, 0.7);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #333;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .bars-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 0;
+            overflow-y: auto;
+        }
+        .class-bar {
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .class-bar.hidden {
+            display: none;
+        }
+        .class-label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .bar-container {
+            background: rgba(240, 240, 240, 0.9);
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 10px 12px;
+            min-height: 60px;
+            display: flex;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 3px;
+            position: relative;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+        }
+        
+        .class-background-image {
+            position: absolute;
+            top: -20px;
+            right: 0;
+            width: 150px;
+            height: calc(100% + 40px);
+            background-size: cover;
+  
+            background-repeat: no-repeat;
+            opacity: 0.9;
+            z-index: 0;
+            border-radius: 0 13px 13px 0;
+            mask: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,1) 70%);
+            -webkit-mask: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,1) 70%);
+        }
+        
+        .class1-background {
+            background-image: url('1.jpg');
+        }
+        
+        .class2-background {
+            background-image: url('2.jpg');
+        }
+        
+        .class3-background {
+            background-image: url('3.jpg');
+        }
+        .class1-bar { 
+            <--background: linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(255, 228, 225, 0.6));
+            border-color: #ff69b4;
+        }
+        .class2-bar { 
+            background: linear-gradient(135deg, rgba(224, 255, 255, 0.3), rgba(240, 255, 255, 0.6));
+            border-color: #20b2aa;
+        }
+        .class3-bar{ 
+            background: linear-gradient(135deg, rgba(255, 248, 220, 0.3), rgba(255, 250, 240, 0.6));
+            border-color: #ffa500;
+        }
+        
+        .female-icon {
+            font-size: 13px;
+            margin: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: inline-block;
+            z-index: 2;
+        }
+        .female-icon:hover {
+            transform: scale(1.3) rotate(10deg);
+            z-index: 5;
+        }
+        .survived { 
+            opacity: 1;
+            -webkit-text-stroke: 0.5px #333;
+            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+        }
+        .died { 
+            opacity: 0.6;
+            -webkit-text-stroke: 1.5px;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0.5px 0.5px 1px rgba(0,0,0,0.2));
+        }
+        
+        /* Legend at bottom of right division */
+        .legend {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 12px;
+            border: 2px solid #333;
+            margin-top: 12px;
+            flex-shrink: 0;
+        }
+        .legend-item {
+            display: inline-block;
+            margin: 0 8px;
+            font-size: 11px;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        }
+        .legend-item:hover {
+            transform: scale(1.05);
+        }
+        .legend-color {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 4px;
+            vertical-align: middle;
+            border: 1px solid #333;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        /* Scale indicator */
+        .scale-indicator {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #2c3e50;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Animation classes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+        .animating-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        .animating-out {
+            animation: fadeOut 0.3s ease-in;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .left-side {
+                flex: none;
+                flex-direction: row;
+                gap: 15px;
+                height: 40%;
+            }
+            .filter-division {
+                flex: 0 0 180px;
+            }
+            .pie-division {
+                flex: 1;
+            }
+            .right-division {
+                flex: 1;
+                height: 60%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            .container {
+                padding: 10px;
+                border-radius: 10px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            .subtitle {
+                font-size: 12px;
+            }
+            .left-side {
+                flex-direction: column;
+                height: 45%;
+            }
+            .filter-division {
+                flex: none;
+            }
+            .filter-buttons {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .filter-btn {
+                flex: 1;
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+            .pie-container {
+                flex-direction: row;
+                gap: 8px;
+                padding: 8px;
+            }
+            .pie-chart {
+                width: 50px;
+                height: 50px;
+            }
+            .pie-label {
+                font-size: 7px;
+            }
+            .pie-info h3 {
+                font-size: 11px;
+            }
+            .pie-info .stats {
+                font-size: 9px;
+            }
+            .female-icon {
+                font-size: 11px;
+            }
+            .right-division {
+                height: 55%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title-section">
+            <h1>Female passengers in higher classes and higher fare groups had better survival rates on the Titanic</h1>
+            <div class="subtitle">🚢 Titanic Female Passengers Analysis by Class and Fare Group</div>
+        </div>
+        
+        <!-- MAIN HORIZONTAL LAYOUT -->
+        <div class="main-content">
+            
+            <!-- LEFT SIDE - TWO DIVISIONS -->
+            <div class="left-side">
+                
+                <!-- TOP LEFT - FILTER CONTROLS -->
+                <div class="filter-division">
+                    <div class="filter-title">Filter by Class</div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-class="all">Show All Classes</button>
+                        <button class="filter-btn class1" data-class="1">1st Class Only</button>
+                        <button class="filter-btn class2" data-class="2">2nd Class Only</button>
+                        <button class="filter-btn class3" data-class="3">3rd Class Only</button>
+                    </div>
+                </div>
+                
+                <!-- BOTTOM LEFT - PIE CHARTS -->
+                <div class="pie-division">
+                    <div class="division-title">Female Survival Overview</div>
+                    
+                    <div class="charts-section" id="charts-section">
+                        <div class="pie-container" data-class="1">
+                            <div class="pie-background-image pie1-background"></div>
+                            <div class="pie-chart class1-pie">
+                                <div class="pie-label">1st<br><strong>97.2%</strong></div>
+                            </div>
+                            <div class="pie-info">
+                                <h3>First Class</h3>
+                                <div class="stats">
+                                    <strong>139</strong> survived / <strong>144</strong> total<br>
+                                    <em>Highest survival rate</em><br>
+                                    Avg fare: £84.15
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="pie-container" data-class="2">
+                            <div class="pie-background-image pie2-background"></div>
+                            <div class="pie-chart class2-pie">
+                                <div class="pie-label">2nd<br><strong>88.7%</strong></div>
+                            </div>
+                            <div class="pie-info">
+                                <h3>Second Class</h3>
+                                <div class="stats">
+                                    <strong>94</strong> survived / <strong>106</strong> total<br>
+                                    <em>Good survival rate</em><br>
+                                    Avg fare: £21.75
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="pie-container" data-class="3">
+                            <div class="pie-background-image pie3-background"></div>
+                            <div class="pie-chart class3-pie">
+                                <div class="pie-label">3rd<br><strong>49.1%</strong></div>
+                            </div>
+                            <div class="pie-info">
+                                <h3>Third Class</h3>
+                                <div class="stats">
+                                    <strong>106</strong> survived / <strong>216</strong> total<br>
+                                    <em>Lower survival rate</em><br>
+                                    Avg fare: £13.68
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- RIGHT DIVISION: DETAILED BREAKDOWN -->
+            <div class="right-division">
+                <div class="division-title">👥 Detailed Female Passenger Breakdown</div>
+                
+                <!-- Scale Indicator -->
+                <div class="scale-indicator" id="scale-indicator">
+                                       <div class="legend-item">
+                        <span class="legend-color" style="background: #007bff;"></span>
+                        <span style="color: #007bff; font-weight: bold;">Low Fare</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #6f42c1;"></span>
+                        <span style="color: #6f42c1; font-weight: bold;">Medium Fare</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #e83e8c;"></span>
+                        <span style="color: #e83e8c; font-weight: bold;">High Fare</span>
+                    </div>
+                    <div class="legend-item">
+                        <strong>💡 Icons:</strong> Solid = Survived, Hollow = Died
+                    </div> 
+					<br>Each icon represents 3 women
+                    
+                </div>
+                
+                <div class="bars-section" id="bars-section">
+                    <div class="class-bar" data-class="1">
+                        <div class="class-label">1st Class (144 Female Passengers)</div>
+                        <div class="bar-container class1-bar" id="class1-bar">
+                            <div class="class-background-image class1-background"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="class-bar" data-class="2">
+                        <div class="class-label">2nd Class (106 Female Passengers)</div>
+                        <div class="bar-container class2-bar" id="class2-bar">
+                            <div class="class-background-image class2-background"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="class-bar" data-class="3">
+                        <div class="class-label">3rd Class (216 Female Passengers)</div>
+                        <div class="bar-container class3-bar" id="class3-bar">
+                            <div class="class-background-image class3-background"></div>
+                        </div>
+                    </div>
+                </div>
+                
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+const survivalData = [
+   {"class": "Class 1", "fare_group": "Low Fare", "survival_rate": 0.958, "count": 48, "survivors": 46},
+   {"class": "Class 1", "fare_group": "Middle Fare", "survival_rate": 1.0, "count": 49, "survivors": 49},
+   {"class": "Class 1", "fare_group": "High Fare", "survival_rate": 0.936, "count": 47, "survivors": 44},
+   {"class": "Class 2", "fare_group": "Low Fare", "survival_rate": 0.857, "count": 35, "survivors": 30},
+   {"class": "Class 2", "fare_group": "Middle Fare", "survival_rate": 0.829, "count": 41, "survivors": 34},
+   {"class": "Class 2", "fare_group": "High Fare", "survival_rate": 1.0, "count": 30, "survivors": 30},
+   {"class": "Class 3", "fare_group": "Low Fare", "survival_rate": 0.611, "count": 72, "survivors": 44},
+   {"class": "Class 3", "fare_group": "Middle Fare", "survival_rate": 0.446, "count": 74, "survivors": 33},
+   {"class": "Class 3", "fare_group": "High Fare", "survival_rate": 0.414, "count": 70, "survivors": 29}
+];
+
+// Median fare data
+const medianFareData = {
+   'Class 1': {
+       'Low Fare': '£31.68',
+       'Middle Fare': '£79.65',
+       'High Fare': '£164.87'
+   },
+   'Class 2': {
+       'Low Fare': '£13.00',
+       'Middle Fare': '£21.00',
+       'High Fare': '£26.25'
+   },
+   'Class 3': {
+       'Low Fare': '£7.75',
+       'Middle Fare': '£8.05',
+       'High Fare': '£23.25'
+   }
+};
+
+let currentFilter = 'all';
+
+// Enhanced color mapping for fare groups
+const fareColors = {
+   'Low Fare': '#007bff',
+   'Middle Fare': '#6f42c1', 
+   'High Fare': '#e83e8c'
+};
+
+// UNIFORM SCALE: Each icon represents the same number of women across all classes
+const WOMEN_PER_ICON = 3; // Each icon represents 3 women
+
+function createFemaleIcons() {
+   // Clear existing icons (but keep background images)
+   document.querySelectorAll('.bar-container').forEach(container => {
+       // Remove only the icons, not the background image div
+       const icons = container.querySelectorAll('.female-icon, .separator');
+       icons.forEach(icon => icon.remove());
+       
+       // Remove separators
+       const separators = container.querySelectorAll('div[style*="linear-gradient"]');
+       separators.forEach(sep => sep.remove());
+   });
+
+   const classData = {
+       'Class 1': survivalData.filter(item => item.class === 'Class 1'),
+       'Class 2': survivalData.filter(item => item.class === 'Class 2'),
+       'Class 3': survivalData.filter(item => item.class === 'Class 3')
+   };
+
+   Object.keys(classData).forEach((className, classIndex) => {
+       const container = document.getElementById(`class${classIndex + 1}-bar`);
+       const classBar = container.closest('.class-bar');
+       
+       // Only create icons for visible bars
+       if (classBar && classBar.style.display !== 'none' && !classBar.classList.contains('hidden')) {
+           
+           classData[className].forEach(fareData => {
+               const color = fareColors[fareData.fare_group];
+               const medianFare = medianFareData[className][fareData.fare_group];
+               
+               // UNIFORM SCALING: Use the same scale for all groups
+               const survivedCount = Math.round(fareData.survivors / WOMEN_PER_ICON);
+               const diedCount = Math.round((fareData.count - fareData.survivors) / WOMEN_PER_ICON);
+               
+               // Add survived icons
+               for (let i = 0; i < survivedCount; i++) {
+                   const icon = document.createElement('i');
+                   icon.className = 'fas fa-female female-icon survived';
+                   icon.style.color = color;
+                   icon.title = `${className} - ${fareData.fare_group} - Survived (${(fareData.survival_rate * 100).toFixed(1)}% survival rate) - Median fare: ${medianFare} - Represents ${WOMEN_PER_ICON} women`;
+                   
+                   // Add click interaction
+                   icon.addEventListener('click', function() {
+                       this.style.animation = 'spin 0.5s ease-out';
+                       setTimeout(() => this.style.animation = '', 500);
+                   });
+                   
+                   container.appendChild(icon);
+               }
+               
+               // Add died icons
+               for (let i = 0; i < diedCount; i++) {
+                   const icon = document.createElement('i');
+                   icon.className = 'fas fa-female female-icon died';
+                   icon.style.webkitTextStrokeColor = color;
+                   icon.title = `${className} - ${fareData.fare_group} - Died (${(fareData.survival_rate * 100).toFixed(1)}% survival rate) - Median fare: ${medianFare} - Represents ${WOMEN_PER_ICON} women`;
+                   
+                   // Add click interaction
+                   icon.addEventListener('click', function() {
+                       this.style.animation = 'pulse 0.5s ease-out';
+                       setTimeout(() => this.style.animation = '', 500);
+                   });
+                   
+                   container.appendChild(icon);
+               }
+               
+               // Add visual separator between fare groups
+               if (fareData !== classData[className][classData[className].length - 1]) {
+                   const separator = document.createElement('div');
+                   separator.className = 'separator';
+                   separator.style.width = '100%';
+                   separator.style.height = '4px';
+                   separator.style.margin = '4px 0';
+                   separator.style.background = `linear-gradient(90deg, transparent, ${color}10, transparent)`;
+                   separator.style.borderRadius = '2px';
+                   separator.style.zIndex = '2';
+                   separator.style.position = 'relative';
+                   container.appendChild(separator);
+               }
+           });
+       }
+   });
+}
+
+// Enhanced filtering function
+function filterByClass(targetClass) {
+   currentFilter = targetClass;
+   
+   // Update filter buttons
+   document.querySelectorAll('.filter-btn').forEach(btn => {
+       btn.classList.remove('active');
+       if (btn.dataset.class === targetClass) {
+           btn.classList.add('active');
+       }
+   });
+   
+   // Filter pie charts in left division
+   document.querySelectorAll('.pie-container').forEach(container => {
+       const classNum = container.dataset.class;
+       if (targetClass === 'all' || targetClass === classNum) {
+           container.style.display = 'flex';
+           container.classList.add('animating-in');
+           container.classList.remove('animating-out');
+       } else {
+           container.style.display = 'none';
+           container.classList.remove('animating-in');
+           container.classList.add('animating-out');
+       }
+   });
+   
+   // Filter and recreate bar charts in right division
+   document.querySelectorAll('.class-bar').forEach(bar => {
+       const classNum = bar.dataset.class;
+       if (targetClass === 'all' || targetClass === classNum) {
+           bar.style.display = 'block';
+           bar.classList.remove('hidden');
+           bar.classList.add('animating-in');
+           bar.classList.remove('animating-out');
+       } else {
+           bar.style.display = 'none';
+           bar.classList.add('hidden');
+           bar.classList.remove('animating-in');
+           bar.classList.add('animating-out');
+       }
+   });
+   
+   // Recreate icons for visible bars only
+   setTimeout(() => {
+       createFemaleIcons();
+   }, 50);
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+   @keyframes spin {
+       from { transform: rotate(0deg) scale(1.4); }
+       to { transform: rotate(360deg) scale(1.4); }
+   }
+   @keyframes pulse {
+       0%, 100% { transform: scale(1.4); }
+       50% { transform: scale(1.6); }
+   }
+`;
+document.head.appendChild(style);
+
+// Initialize filter event listeners
+document.querySelectorAll('.filter-btn').forEach(btn => {
+   btn.addEventListener('click', function() {
+       const targetClass = this.dataset.class;
+       filterByClass(targetClass);
+   });
+});
+
+// Initialize the visualization
+createFemaleIcons();
+
+// Add a subtle animation on load
+setTimeout(() => {
+   document.querySelectorAll('.pie-container, .class-bar').forEach((element, index) => {
+       element.style.animation = `fadeIn 0.6s ease-out ${index * 0.1}s both`;
+   });
+}, 100);
+    </script>
+</body>
+</html>
